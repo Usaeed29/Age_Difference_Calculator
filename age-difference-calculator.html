@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Difference Machine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #f5f5dc 0%, #e8dcc4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #2a2a2a;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #faf8f3;
+            border: 4px solid #2a2a2a;
+            box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.15);
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px double #2a2a2a;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #2a2a2a;
+            animation: blink 1s infinite;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .input-section {
+            margin: 30px 0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border: 2px solid #2a2a2a;
+            background: #fff;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        input[type="date"]:focus {
+            border-color: #4a4a4a;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: #2a2a2a;
+            color: #faf8f3;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+
+        .calculate-btn:hover {
+            background: #4a4a4a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+            border-top: 3px double #2a2a2a;
+            padding-top: 30px;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .main-result {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fff;
+            border: 3px solid #2a2a2a;
+        }
+
+        .main-result .label {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .main-result .value {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2a2a2a;
+        }
+
+        .current-ages {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fff;
+            border: 3px solid #2a2a2a;
+        }
+
+        .ages-title {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #666;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ages-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .age-item {
+            text-align: center;
+            padding: 15px;
+            background: #faf8f3;
+            border: 2px solid #e0e0e0;
+        }
+
+        .age-label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .age-value {
+            display: block;
+            font-size: 32px;
+            font-weight: bold;
+            color: #2a2a2a;
+        }
+
+        .timeline {
+            margin-top: 20px;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-item {
+            padding: 15px;
+            margin-bottom: 8px;
+            background: #fff;
+            border: 2px solid #2a2a2a;
+            font-size: 14px;
+        }
+
+        .timeline-item .year {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .timeline-item .diff {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timeline-item .ages {
+            color: #888;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #2a2a2a;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .main-result .value {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>THE AGE DIFFERENCE MACHINE<span class="cursor"></span></h1>
+            <p class="subtitle">Very Serious Calculator™</p>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="husband-date">Husband's Birth Date:</label>
+                <input type="date" id="husband-date" required>
+            </div>
+
+            <div class="input-group">
+                <label for="wife-date">Wife's Birth Date:</label>
+                <input type="date" id="wife-date" required>
+            </div>
+
+            <div class="input-group">
+                <label for="current-date">Current Date:</label>
+                <input type="date" id="current-date" required>
+            </div>
+
+            <button class="calculate-btn" onclick="calculate()">
+                ► Calculate Difference
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            &gt; CALCULATING... PLEASE WAIT...
+        </div>
+
+        <div class="results" id="results">
+            <div class="main-result">
+                <div class="label">Age Difference:</div>
+                <div class="value" id="difference">0 YEARS</div>
+            </div>
+
+            <div class="current-ages" id="current-ages">
+                <div class="ages-title">Current Ages:</div>
+                <div class="ages-display">
+                    <div class="age-item">
+                        <span class="age-label">Husband:</span>
+                        <span class="age-value" id="husband-current-age">—</span>
+                    </div>
+                    <div class="age-item">
+                        <span class="age-label">Wife:</span>
+                        <span class="age-value" id="wife-current-age">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-title">› Future Timeline Preview</div>
+                <div class="timeline-item" id="timeline-2026">
+                    <div class="year">2026</div>
+                    <div class="diff">—</div>
+                    <div class="ages">—</div>
+                </div>
+                <div class="timeline-item" id="timeline-2030">
+                    <div class="year">2030</div>
+                    <div class="diff">—</div>
+                    <div class="ages">—</div>
+                </div>
+                <div class="timeline-item" id="timeline-2035">
+                    <div class="year">2035</div>
+                    <div class="diff">—</div>
+                    <div class="ages">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>• Time is doing this, not me. •</p>
+            <p>Same love. Different years.</p>
+            <p style="margin-top: 10px; font-size: 11px;">Built with love & bad math jokes.</p>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const husbandDate = document.getElementById('husband-date').value;
+            const wifeDate = document.getElementById('wife-date').value;
+            const currentDate = document.getElementById('current-date').value;
+
+            if (!husbandDate || !wifeDate || !currentDate) {
+                alert('Please enter all three dates!');
+                return;
+            }
+
+            // Show loading
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            loading.classList.add('active');
+            results.classList.remove('active');
+
+            // Simulate retro calculation delay
+            setTimeout(() => {
+                const husbandBirth = new Date(husbandDate);
+                const wifeBirth = new Date(wifeDate);
+                const current = new Date(currentDate);
+
+                // Calculate ages based on current date
+                function calculateAge(birthDate, currentDate) {
+                    const birth = new Date(birthDate);
+                    const current = new Date(currentDate);
+                    
+                    let age = current.getFullYear() - birth.getFullYear();
+                    
+                    // If current date is before birth date, return negative age
+                    if (current < birth) {
+                        return -(birth.getFullYear() - current.getFullYear());
+                    }
+                    
+                    return age;
+                }
+
+                const husbandAge = calculateAge(husbandBirth, current);
+                const wifeAge = calculateAge(wifeBirth, current);
+
+                // Check for negative ages and show error
+                if (husbandAge < 0 || wifeAge < 0) {
+                    loading.classList.remove('active');
+                    alert('ERROR: Current date is before birth date!\nNegative age detected. Please check your dates.');
+                    return;
+                }
+
+                // Calculate base age difference (birth year difference)
+                const baseDiff = Math.abs(husbandBirth.getFullYear() - wifeBirth.getFullYear());
+
+                // Calculate "sarcastic" current difference based on how far from 2026 we are
+                const currentYear = current.getFullYear();
+                const baseYear = 2026;
+                
+                function calculateSarcasticDiff(year) {
+                    const yearsPassed = year - baseYear;
+                    // For every 4 years from 2026, add 2 to the base difference (sarcastic math)
+                    const additionalYears = Math.max(0, Math.floor(yearsPassed / 4) * 2);
+                    return baseDiff + additionalYears;
+                }
+
+                function calculateAgeInYear(birthDate, year) {
+                    return year - birthDate.getFullYear();
+                }
+
+                function updateTimeline(year, elementId) {
+                    const sarcasticDiff = calculateSarcasticDiff(year);
+                    const husbandAgeInYear = calculateAgeInYear(husbandBirth, year);
+                    // Calculate wife's age using sarcastic difference
+                    const wifeAgeInYear = husbandAgeInYear - sarcasticDiff;
+                    
+                    const timelineItem = document.getElementById(elementId);
+                    timelineItem.querySelector('.diff').textContent = `Difference: ${sarcasticDiff} years`;
+                    timelineItem.querySelector('.ages').textContent = `Husband will be ${husbandAgeInYear}, Wife will be ${wifeAgeInYear}`;
+                }
+
+                // Calculate current sarcastic difference
+                const currentDiff = calculateSarcasticDiff(currentYear);
+
+                // Update main result with sarcastic difference
+                document.getElementById('difference').textContent = `${currentDiff} YEAR${currentDiff !== 1 ? 'S' : ''}`;
+
+                // Calculate and display current ages
+                const husbandCurrentAge = calculateAgeInYear(husbandBirth, currentYear);
+                const wifeCurrentAge = husbandCurrentAge - currentDiff; // Using sarcastic difference
+                
+                document.getElementById('husband-current-age').textContent = husbandCurrentAge;
+                document.getElementById('wife-current-age').textContent = wifeCurrentAge;
+
+                // Update timeline with "increasing" differences and ages
+                updateTimeline(2026, 'timeline-2026');
+                updateTimeline(2030, 'timeline-2030');
+                updateTimeline(2035, 'timeline-2035');
+
+                // Hide loading, show results
+                loading.classList.remove('active');
+                results.classList.add('active');
+            }, 800);
+        }
+
+        // Allow Enter key to calculate
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculate();
+            }
+        });
+
+        // Set current date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('current-date').value = today;
+        });
+    </script>
+</body>
+</html>
